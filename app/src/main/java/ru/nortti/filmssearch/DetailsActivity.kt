@@ -41,7 +41,7 @@ class DetailsActivity : AppCompatActivity() {
                 type = "text/plain"
             }
 
-            val shareIntent = Intent.createChooser(sendIntent, null)
+            val shareIntent = Intent.createChooser(sendIntent, resources.getString(R.string.share))
             startActivity(shareIntent)
         }
     }
