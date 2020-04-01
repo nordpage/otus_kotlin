@@ -2,17 +2,13 @@ package ru.nortti.filmssearch
 
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.PersistableBundle
-import android.preference.PreferenceManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -22,10 +18,11 @@ import ru.nortti.filmssearch.Constants.LANGUAGE
 import ru.nortti.filmssearch.Constants.THEME
 import ru.nortti.filmssearch.Constants.setAppTheme
 import ru.nortti.filmssearch.Constants.setLocale
-import ru.nortti.filmssearch.R
+import ru.nortti.filmssearch.utils.ItemAnimator
+import ru.nortti.filmssearch.utils.ItemOffsetDecoration
 
 class MainActivity : AppCompatActivity() {
-
+    lateinit var adapter: FilmsAdapter
     lateinit var prefs: SharedPreference
     private val filmViewModel by lazy { ViewModelProviders.of(this).get(FilmViewModel::class.java) }
     private var cells = 2
@@ -41,18 +38,21 @@ class MainActivity : AppCompatActivity() {
 
         prefs = SharedPreference(this)
 
-        var adapter = FilmsAdapter(this)
+        adapter = FilmsAdapter(this, prefs, false)
         cells = when (resources.configuration.orientation) {
             Configuration.ORIENTATION_PORTRAIT -> 2
             Configuration.ORIENTATION_LANDSCAPE -> 4
             else -> throw IllegalStateException()
         }
-        rvList.layoutManager = GridLayoutManager(this, cells)
+        var layoutManager = GridLayoutManager(this, cells)
+        rvList.layoutManager = layoutManager
         rvList.adapter = adapter
+        rvList.addItemDecoration(ItemOffsetDecoration(20))
+        rvList.itemAnimator = ItemAnimator(this)
 
         filmViewModel.getListFilms().observe(this, Observer {
             it?.let {
-                adapter.addFilms(it)
+                initAdapter(it)
             }
         })
 
@@ -63,15 +63,22 @@ class MainActivity : AppCompatActivity() {
                 }
                 startActivityForResult(intent, RESULT_CODE)
             }
-
         })
+
 
     }
 
+    private fun initAdapter(list: List<Film>) {
+        list.forEach {
+            adapter.addFilm(it)
+        }
+    }
+
     override fun onResume() {
-        setLocale(this,prefs.getValueString(LANGUAGE)!!)
-        setAppTheme(prefs.getValueString(THEME)!!)
         super.onResume()
+        setLocale(this, prefs.getValueString(LANGUAGE)!!)
+        setAppTheme(prefs.getValueString(THEME)!!)
+        adapter.notifyDataSetChanged()
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
@@ -112,16 +119,21 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         return when (item.itemId) {
+            R.id.favs -> {
+                startActivity(Intent(this, FavoritesActivity::class.java))
+                return true
+            }
             R.id.language -> {
-                if  (prefs.getValueString(LANGUAGE).equals("RU")){
-                    prefs.save(LANGUAGE,"EN")
+                if (prefs.getValueString(LANGUAGE).equals("RU")) {
+                    prefs.save(LANGUAGE, "EN")
+
                 } else {
-                    prefs.save(LANGUAGE,"RU")
+                    prefs.save(LANGUAGE, "RU")
                 }
                 this.recreate()
                 return true
             }
-            R.id.theme ->{
+            R.id.theme -> {
                 if (prefs.getValueString(THEME).equals("DAY")) {
                     prefs.save(THEME, "NIGHT")
                 } else {
@@ -144,14 +156,14 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage(resources.getString(R.string.want_exit))
 
         // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton(resources.getString(R.string.yes)){dialog, which ->
-           finish()
+        builder.setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+            finish()
 
         }
 
 
         // Display a negative button on alert dialog
-        builder.setNegativeButton(resources.getString(R.string.no)){dialog,which ->
+        builder.setNegativeButton(resources.getString(R.string.no)) { dialog, which ->
             dialog.dismiss()
         }
 

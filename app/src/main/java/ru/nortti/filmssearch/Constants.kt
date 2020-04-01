@@ -8,6 +8,7 @@ import java.util.*
 object Constants {
     var LANGUAGE = "language"
     var THEME = "theme"
+    var TASKS = "tasks"
 
     fun setLocale(context: Context, langCode: String){
         var config = Configuration(context.resources.configuration)
