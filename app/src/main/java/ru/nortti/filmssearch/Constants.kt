@@ -1,8 +1,10 @@
 package ru.nortti.filmssearch
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.fragment.app.Fragment
 import java.util.*
 
 object Constants {
@@ -24,4 +26,6 @@ object Constants {
             "NIGHT" ->  AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
         }
     }
+
+
 }

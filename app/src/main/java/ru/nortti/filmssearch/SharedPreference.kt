@@ -41,6 +41,11 @@ class SharedPreference(val context: Context) {
         save(films)
     }
 
+    fun addToFav(pos: Int, film: Film) {
+        films.add(pos, film)
+        save(films)
+    }
+
     fun removeFromFav(film: Film){
         if (films.contains(film)) {
             films.remove(film)

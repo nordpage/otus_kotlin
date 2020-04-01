@@ -4,5 +4,7 @@
         <item>@font/bangers</item>
         <item>@font/comfortaa</item>
         <item>@font/oswald</item>
+        <item>@font/roboto</item>
+        <item>@font/roboto_thin</item>
     </array>
 </resources>

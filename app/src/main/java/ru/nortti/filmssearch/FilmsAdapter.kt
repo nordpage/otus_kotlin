@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.item_film.view.*
 
 class FilmsAdapter(var context: Context, var prefs: SharedPreference, var isFav: Boolean) : RecyclerView.Adapter<FilmsAdapter.ViewHolder>() {
@@ -62,13 +63,20 @@ class FilmsAdapter(var context: Context, var prefs: SharedPreference, var isFav:
             }
             itemView.poster.setOnLongClickListener {
                 if (isFav) {
-                    if  (prefs!!.getFavorites().contains(item)){
-                        prefs!!.removeFromFav(item)
+                    if  (prefs.getFavorites().contains(item)){
+                        var pos = adapterPosition
+                        Snackbar.make(it, String.format(context.getString(R.string.remove_from_fav), item.name), Snackbar.LENGTH_SHORT).setAction(R.string.undo, View.OnClickListener {
+                            prefs.addToFav(pos, item)
+                            notifyItemInserted(pos)
+                        }).show()
+
+                        prefs.removeFromFav(item)
                         notifyItemRemoved(adapterPosition)
                     }
                 } else {
                     if  (!prefs!!.getFavorites().contains(item)){
                         prefs!!.addToFav(item)
+                        Snackbar.make(it, String.format(context.getString(R.string.add_to_fav), item.name), Snackbar.LENGTH_SHORT).show()
                         notifyItemChanged(adapterPosition)
 
                     }

@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,14 +19,13 @@ import ru.nortti.filmssearch.Constants.LANGUAGE
 import ru.nortti.filmssearch.Constants.THEME
 import ru.nortti.filmssearch.Constants.setAppTheme
 import ru.nortti.filmssearch.Constants.setLocale
+import ru.nortti.filmssearch.fragments.FavoriteFragment
+import ru.nortti.filmssearch.fragments.MainFragment
+import ru.nortti.filmssearch.fragments.SettingsFragment
 import ru.nortti.filmssearch.utils.ItemAnimator
 import ru.nortti.filmssearch.utils.ItemOffsetDecoration
 
 class MainActivity : AppCompatActivity() {
-    lateinit var adapter: FilmsAdapter
-    lateinit var prefs: SharedPreference
-    private val filmViewModel by lazy { ViewModelProviders.of(this).get(FilmViewModel::class.java) }
-    private var cells = 2
 
     companion object {
         private const val TAG = "MainActivity"
@@ -36,50 +36,32 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        prefs = SharedPreference(this)
-
-        adapter = FilmsAdapter(this, prefs, false)
-        cells = when (resources.configuration.orientation) {
-            Configuration.ORIENTATION_PORTRAIT -> 2
-            Configuration.ORIENTATION_LANDSCAPE -> 4
-            else -> throw IllegalStateException()
-        }
-        var layoutManager = GridLayoutManager(this, cells)
-        rvList.layoutManager = layoutManager
-        rvList.adapter = adapter
-        rvList.addItemDecoration(ItemOffsetDecoration(20))
-        rvList.itemAnimator = ItemAnimator(this)
-
-        filmViewModel.getListFilms().observe(this, Observer {
-            it?.let {
-                initAdapter(it)
-            }
-        })
-
-        adapter.setOnClickListener(object : FilmsAdapter.OnClickListener {
-            override fun onClick(item: Film) {
-                val intent = Intent(this@MainActivity, DetailsActivity::class.java).apply {
-                    putExtra("film", item)
+        loadFragment(MainFragment())
+        navigationView.inflateMenu(R.menu.bottom_menu)
+        navigationView.setOnNavigationItemSelectedListener {
+            when(it.itemId){
+                R.id.films-> {
+                    loadFragment(MainFragment())
+                    return@setOnNavigationItemSelectedListener true
                 }
-                startActivityForResult(intent, RESULT_CODE)
+
+                R.id.favorites-> {
+                    loadFragment(FavoriteFragment())
+                    return@setOnNavigationItemSelectedListener true
+                }
+
+                R.id.settings-> {
+                    loadFragment(SettingsFragment())
+                    return@setOnNavigationItemSelectedListener true
+                }
+
             }
-        })
+            false
 
-
-    }
-
-    private fun initAdapter(list: List<Film>) {
-        list.forEach {
-            adapter.addFilm(it)
         }
+
     }
 
-    override fun onResume() {
-        super.onResume()
-        setLocale(this, prefs.getValueString(LANGUAGE)!!)
-        setAppTheme(prefs.getValueString(THEME)!!)
-        adapter.notifyDataSetChanged()
-    }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
@@ -116,35 +98,35 @@ class MainActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-        return when (item.itemId) {
-            R.id.favs -> {
-                startActivity(Intent(this, FavoritesActivity::class.java))
-                return true
-            }
-            R.id.language -> {
-                if (prefs.getValueString(LANGUAGE).equals("RU")) {
-                    prefs.save(LANGUAGE, "EN")
-
-                } else {
-                    prefs.save(LANGUAGE, "RU")
-                }
-                this.recreate()
-                return true
-            }
-            R.id.theme -> {
-                if (prefs.getValueString(THEME).equals("DAY")) {
-                    prefs.save(THEME, "NIGHT")
-                } else {
-                    prefs.save(THEME, "DAY")
-                }
-                this.recreate()
-                return true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//
+//        return when (item.itemId) {
+//            R.id.favs -> {
+//                startActivity(Intent(this, FavoritesActivity::class.java))
+//                return true
+//            }
+//            R.id.language -> {
+//                if (prefs.getValueString(LANGUAGE).equals("RU")) {
+//                    prefs.save(LANGUAGE, "EN")
+//
+//                } else {
+//                    prefs.save(LANGUAGE, "RU")
+//                }
+//                this.recreate()
+//                return true
+//            }
+//            R.id.theme -> {
+//                if (prefs.getValueString(THEME).equals("DAY")) {
+//                    prefs.save(THEME, "NIGHT")
+//                } else {
+//                    prefs.save(THEME, "DAY")
+//                }
+//                this.recreate()
+//                return true
+//            }
+//            else -> super.onOptionsItemSelected(item)
+//        }
+//    }
 
     override fun onBackPressed() {
         val builder = AlertDialog.Builder(this@MainActivity)
@@ -172,6 +154,14 @@ class MainActivity : AppCompatActivity() {
 
         // Display the alert dialog on app interface
         dialog.show()
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        // load fragment
+        val transaction = supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.container, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
     }
 
 }
