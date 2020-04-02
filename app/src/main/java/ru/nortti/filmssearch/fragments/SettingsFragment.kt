@@ -33,11 +33,11 @@ class SettingsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         lang_but.setOnClickListener {
-            if (prefs.getValueString(LANGUAGE).equals("RU")) {
-                    prefs.save(LANGUAGE, "EN")
+            if (prefs.getValueString(LANGUAGE).equals("ru")) {
+                    prefs.save(LANGUAGE, "en")
 
                 } else {
-                    prefs.save(LANGUAGE, "RU")
+                    prefs.save(LANGUAGE, "ru")
                 }
                 requireActivity().recreate()
         }
@@ -56,10 +56,10 @@ class SettingsFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         when(prefs.getValueString(LANGUAGE)) {
-            "RU" -> {
+            "ru" -> {
                 lang_but.setImageResource(R.drawable.ic_en)
             }
-            "EN" -> {
+            "en" -> {
                 lang_but.setImageResource(R.drawable.ic_ru)
             }
         }

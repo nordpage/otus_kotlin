@@ -20,4 +20,5 @@
     <string name="current_theme">Current theme: %s</string>
     <string name="day">Day</string>
     <string name="night">Night</string>
+    <string name="rating">Rating: %s (%s votes)</string>
 </resources>

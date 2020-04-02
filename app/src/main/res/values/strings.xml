@@ -24,4 +24,5 @@
     <string name="current_theme">Текущая тема: %s</string>
     <string name="day">Дневная</string>
     <string name="night">Ночная</string>
+    <string name="rating">Рейтинг: %s (%s голосов)</string>
 </resources>
