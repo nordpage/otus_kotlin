@@ -29,9 +29,6 @@ android {
 }
 
 dependencies {
-    def room_version = "2.2.5"
-    def lifecycle_version = "1.1.0"
-
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
@@ -81,21 +78,10 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.6.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
-<<<<<<< HEAD
     // GSON
     implementation 'com.google.code.gson:gson:2.8.6'
 
     //Glide
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
-=======
-    implementation "android.arch.lifecycle:runtime:$lifecycle_version"
-    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
-
-    implementation "androidx.room:room-ktx:$room_version"
-    implementation "androidx.room:room-rxjava2:$room_version"
-    implementation "androidx.room:room-guava:$room_version"
-    testImplementation "androidx.room:room-testing:$room_version"
-
->>>>>>> 7fedf6b... HW6 Update
 }

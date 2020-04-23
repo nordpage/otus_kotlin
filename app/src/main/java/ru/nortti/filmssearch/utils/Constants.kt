@@ -6,7 +6,7 @@ package ru.nortti.filmssearch.utils
     const val UPDATE_TIME = "update_time"
     const val LIMIT_TIME = 120000L
 
-const val BASE_URL = "https://api.themoviedb.org/3/"
+    const val BASE_URL = "https://api.themoviedb.org/3/"
     const val API_KEY = "a1f3b8db759ad54efeb48ffa8aaf60e3"
 
     const val PAGE_START = 1

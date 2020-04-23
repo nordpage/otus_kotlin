@@ -1,67 +1,33 @@
 package ru.nortti.filmssearch.viewModel.viewModels
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import ru.nortti.filmssearch.App
-import ru.nortti.filmssearch.utils.SharedPreference
-import ru.nortti.filmssearch.api.ApiInteractor
+import androidx.lifecycle.liveData
+import kotlinx.coroutines.Dispatchers
 import ru.nortti.filmssearch.model.remote.ErrorResponse
+import ru.nortti.filmssearch.model.remote.MovieDetail
 import ru.nortti.filmssearch.model.remote.MovieResponse
-import ru.nortti.filmssearch.utils.API_KEY
-import ru.nortti.filmssearch.utils.LANGUAGE
+import ru.nortti.filmssearch.viewModel.repositories.MovieRepository
 
-class MoviesViewModel: ViewModel() {
-    private val moviesLiveData = MutableLiveData<MovieResponse>()
-    private val errorLiveData = MutableLiveData<Throwable>()
-    private val customErrorLiveData = MutableLiveData<ErrorResponse>()
-    private val apiInteractor = App.getInstance().getInteractor()
-    private val prefs: SharedPreference =
-        SharedPreference(App.getInstance().applicationContext)
+class MoviesViewModel(application: Application): AndroidViewModel(application) {
+    private val moviesRepository = MovieRepository.getInstance(application)
+
     val movies : LiveData<MovieResponse>
-        get() = moviesLiveData
+        get() =  moviesRepository.getAllMoviesLiveData()
 
     val errors: LiveData<Throwable>
-        get() = errorLiveData
+        get() = moviesRepository.getErrorData()
 
     val customErrors: LiveData<ErrorResponse>
-        get() = customErrorLiveData
+        get() = moviesRepository.getCustomErrorData()
 
     fun onGetData() {
-        apiInteractor.getTopMovies(
-            API_KEY, prefs.getValueString(
-                LANGUAGE)!!, object : ApiInteractor.GetMoviesCallback {
-            override fun onSuccess(movies: MovieResponse) {
-                moviesLiveData.postValue(movies)
-            }
-
-            override fun onError(error: Throwable) {
-                errorLiveData.postValue(error)
-            }
-
-            override fun onCustomError(error: ErrorResponse) {
-                customErrorLiveData.postValue(error)
-            }
-
-        })
+        moviesRepository.getAllMoviesLiveData()
     }
 
     fun onGetPagedData(page: Int) {
-        apiInteractor.getTopMoviesPagination(
-            API_KEY, prefs.getValueString(
-                LANGUAGE)!!, page, object : ApiInteractor.GetMoviesCallback {
-            override fun onSuccess(movies: MovieResponse) {
-                moviesLiveData.postValue(movies)
-            }
-
-            override fun onError(error: Throwable) {
-                errorLiveData.postValue(error)
-            }
-
-            override fun onCustomError(error: ErrorResponse) {
-                customErrorLiveData.postValue(error)
-            }
-
-        })
+        moviesRepository.getMoviesPaginationLiveData(page)
     }
 }

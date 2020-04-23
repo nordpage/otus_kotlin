@@ -12,18 +12,16 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
-import ru.nortti.filmssearch.*
-import ru.nortti.filmssearch.view.adapters.MovieAdapter
-import ru.nortti.filmssearch.view.adapters.listeners.PaginationScrollListener
-import ru.nortti.filmssearch.viewModel.viewModels.MoviesViewModel
+import ru.nortti.filmssearch.R
 import ru.nortti.filmssearch.model.remote.ErrorResponse
-import ru.nortti.filmssearch.model.remote.Movie
 import ru.nortti.filmssearch.model.remote.MovieResponse
 import ru.nortti.filmssearch.utils.*
-import ru.nortti.filmssearch.utils.Extensions.toFavorite
+import ru.nortti.filmssearch.view.adapters.MovieAdapter
 import ru.nortti.filmssearch.view.adapters.utils.ItemAnimator
 import ru.nortti.filmssearch.view.adapters.utils.ItemOffsetDecoration
+import ru.nortti.filmssearch.view.adapters.utils.PaginationScrollListener
 import ru.nortti.filmssearch.viewModel.viewModels.FavoritesViewModel
+import ru.nortti.filmssearch.viewModel.viewModels.MoviesViewModel
 
 /**
  * A simple [Fragment] subclass.

@@ -12,12 +12,12 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_details.descriptionTx
 import kotlinx.android.synthetic.main.activity_details.poster
 import kotlinx.android.synthetic.main.fragment_detail.*
-
 import ru.nortti.filmssearch.R
-import ru.nortti.filmssearch.viewModel.viewModels.DetailsViewModel
 import ru.nortti.filmssearch.model.remote.ErrorResponse
 import ru.nortti.filmssearch.model.remote.MovieDetail
 import ru.nortti.filmssearch.utils.Extensions.getImageUrlBig
+import ru.nortti.filmssearch.viewModel.viewModels.DetailsViewModel
+
 
 class DetailsFragment : Fragment() {
 
