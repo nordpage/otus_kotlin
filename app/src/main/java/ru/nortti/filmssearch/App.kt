@@ -1,10 +1,12 @@
 package ru.nortti.filmssearch
 
 import android.app.Application
+import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
 import ru.nortti.filmssearch.Constants.LANGUAGE
 import ru.nortti.filmssearch.Constants.THEME
 import ru.nortti.filmssearch.network.ApiClient
+import ru.nortti.filmssearch.network.ApiInteractor
 import ru.nortti.filmssearch.network.ApiInterface
 
 class App : Application() {
@@ -13,6 +15,7 @@ class App : Application() {
         lateinit var prefs: SharedPreference
         lateinit var INSTANCE: App
         lateinit var service: ApiInterface
+        lateinit var appInteractor: ApiInteractor
 
         @JvmStatic
         fun getInstance() : App {
@@ -29,6 +32,7 @@ class App : Application() {
 
         INSTANCE = this
         initRetrofit()
+        initInteractor()
         super.onCreate()
     }
 
@@ -36,8 +40,15 @@ class App : Application() {
         var retrofit = ApiClient.getClient()
         service = retrofit.create(ApiInterface::class.java)
     }
+    fun initInteractor() {
+        appInteractor = ApiInteractor(service)
+    }
     fun getService() : ApiInterface {
         return service
+    }
+
+    fun getInteractor() : ApiInteractor {
+        return appInteractor
     }
 
 }

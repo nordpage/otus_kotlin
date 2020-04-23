@@ -22,6 +22,7 @@ import ru.nortti.filmssearch.Constants.PAGE_START
 import ru.nortti.filmssearch.Constants.TOTAL_PAGES
 import ru.nortti.filmssearch.adapters.MovieAdapter
 import ru.nortti.filmssearch.adapters.PaginationScrollListener
+import ru.nortti.filmssearch.arch.models.MoviesViewModel
 import ru.nortti.filmssearch.network.ApiInterface
 import ru.nortti.filmssearch.network.models.MovieResponce
 import ru.nortti.filmssearch.utils.ItemAnimator
@@ -54,6 +55,8 @@ class MainFragment : Fragment() {
     var pagination: Call<MovieResponce>? = null
     var apiService: ApiInterface? = null
 
+    private var viewModel: MoviesViewModel? = null
+
     companion object {
         private const val TAG = "MainActivity"
         private const val RESULT_CODE = 0
@@ -63,7 +66,20 @@ class MainFragment : Fragment() {
         super.onCreate(savedInstanceState)
 
         prefs = SharedPreference(requireContext())
-        movieAdapter = MovieAdapter(requireContext())
+        movieAdapter = MovieAdapter(requireContext(), object : MovieAdapter.MovieCallback {
+            override fun onMovieAdded() {
+                swipeRefreshLayout.isRefreshing = false
+            }
+
+            override fun onClick(movie_id: Int) {
+                val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                val frag = DetailsFragment.newInstance(movie_id)
+                transaction.replace(R.id.container, frag)
+                transaction.addToBackStack(null)
+                transaction.commit()
+            }
+
+        })
 
         adapter = FilmsAdapter(requireContext(), prefs, false)
         cells = when (resources.configuration.orientation) {
@@ -95,29 +111,30 @@ class MainFragment : Fragment() {
         })
 
 
-        apiService = App.getInstance().getService()
-        result =
-            apiService!!.getTopRatedMovies(API_KEY, prefs.getValueString(LANGUAGE)!!)
-        callback = object : Callback<MovieResponce> {
-            override fun onFailure(call: Call<MovieResponce>, t: Throwable) {
-                Log.e("Error", t.toString())
-            }
-
-            override fun onResponse(call: Call<MovieResponce>, response: Response<MovieResponce>) {
-                val list = response.body()!!.results
-                movieAdapter.setMovies(list)
-            }
-
-        }
+//        apiService = App.getInstance().getService()
+//        result =
+//            apiService!!.getTopRatedMovies(API_KEY, prefs.getValueString(LANGUAGE)!!)
+//        callback = object : Callback<MovieResponce> {
+//            override fun onFailure(call: Call<MovieResponce>, t: Throwable) {
+//                Log.e("Error", t.toString())
+//            }
+//
+//            override fun onResponse(call: Call<MovieResponce>, response: Response<MovieResponce>) {
+//                val list = response.body()!!.results
+//                movieAdapter.setMovies(list)
+//            }
+//
+//        }
     }
 
 
-    fun loadInitPage() {
-        result!!.enqueue(callback)
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
+        viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponce> { movie -> movieAdapter!!.setMovies(movie.results)})
         rvList.layoutManager = layoutManager
         rvList.adapter = movieAdapter
         rvList.addItemDecoration(ItemOffsetDecoration(20))
@@ -149,18 +166,22 @@ class MainFragment : Fragment() {
             }
 
         })
-        loadInitPage()
+        viewModel!!.onGetData()
 
         swipeRefreshLayout.setOnRefreshListener {
-            Handler().postDelayed(object: Runnable{
-                override fun run() {
-                    result =
-                        apiService!!.getTopRatedMovies(API_KEY, prefs.getValueString(LANGUAGE)!!)
-                    result!!.enqueue(callback)
-                    swipeRefreshLayout.isRefreshing = false
-                }
+//            Handler().postDelayed(object: Runnable{
+//                override fun run() {
+//                    result =
+//                        apiService!!.getTopRatedMovies(API_KEY, prefs.getValueString(LANGUAGE)!!)
+//                    result!!.enqueue(callback)
+//                    swipeRefreshLayout.isRefreshing = false
+//                }
+//
+//            }, 1500)
 
-            }, 1500)
+            viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponce> { movie -> movieAdapter!!.setMovies(movie.results) })
+
+            swipeRefreshLayout.isRefreshing = false
         }
     }
 
@@ -178,25 +199,27 @@ class MainFragment : Fragment() {
     }
 
     fun loadNextPage() {
-        pagination = apiService!!.getTopRatedMoviesWithPagination(
-            API_KEY, prefs.getValueString(
-                LANGUAGE
-            )!!, current_page
-        )
-        pagination!!.enqueue(object : Callback<MovieResponce>{
-            override fun onFailure(call: Call<MovieResponce>, t: Throwable) {
 
-            }
-
-            override fun onResponse(call: Call<MovieResponce>, response: Response<MovieResponce>) {
-                isLoading = false
-                swipeRefreshLayout.isRefreshing = isLoading
-                movieAdapter.setMovies(response.body()!!.results)
-                if (current_page == TOTAL_PAGES) isLastPage = true
-
-            }
-
-        })
+        viewModel!!.onGetPagedData(current_page)
+//        pagination = apiService!!.getTopRatedMoviesWithPagination(
+//            API_KEY, prefs.getValueString(
+//                LANGUAGE
+//            )!!, current_page
+//        )
+//        pagination!!.enqueue(object : Callback<MovieResponce>{
+//            override fun onFailure(call: Call<MovieResponce>, t: Throwable) {
+//
+//            }
+//
+//            override fun onResponse(call: Call<MovieResponce>, response: Response<MovieResponce>) {
+//                isLoading = false
+//                swipeRefreshLayout.isRefreshing = isLoading
+//                movieAdapter.setMovies(response.body()!!.results)
+//                if (current_page == TOTAL_PAGES) isLastPage = true
+//
+//            }
+//
+//        })
     }
 
 

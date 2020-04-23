@@ -37,5 +37,12 @@ object Constants {
         return url.toString()
     }
 
+    fun getImageUrlBig(poster: String): String {
+        val url = StringBuilder()
+        url.append("https://image.tmdb.org/t/p/w342").append(poster)
+        return url.toString()
+    }
+
+
 
 }

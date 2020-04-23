@@ -11,14 +11,15 @@ import ru.nortti.filmssearch.Constants.getImageUrl
 import ru.nortti.filmssearch.R
 import ru.nortti.filmssearch.network.models.Movie
 
-class MovieAdapter(var context: Context) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
+class MovieAdapter(var context: Context, var callback: MovieCallback) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
     private var movies: MutableList<Movie> = mutableListOf()
 
-    fun setMovies(list: List<Movie>){
+    fun  setMovies(list: List<Movie>){
         list.forEach {
             addMovie(it)
         }
+        callback.onMovieAdded()
     }
 
     fun addMovie(movie: Movie){
@@ -35,7 +36,7 @@ class MovieAdapter(var context: Context) : RecyclerView.Adapter<MovieAdapter.Vie
     }
 
 
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: Movie) {
             itemView.title.text = item.title
@@ -47,6 +48,9 @@ class MovieAdapter(var context: Context) : RecyclerView.Adapter<MovieAdapter.Vie
 
             itemView.ratingTx.text = String.format(itemView.context.getString(R.string.rating), item.voteAverage, item.voteCount)
 
+            itemView.details.setOnClickListener {
+                callback.onClick(item.id.toInt())
+            }
         }
     }
 
@@ -63,5 +67,10 @@ class MovieAdapter(var context: Context) : RecyclerView.Adapter<MovieAdapter.Vie
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val movie = movies[position]
         holder.bind(movie)
+    }
+
+    interface MovieCallback {
+        fun onMovieAdded()
+        fun onClick(movie_id: Int)
     }
 }
