@@ -8,17 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.Observer
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.activity_details.*
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_details.descriptionTx
 import kotlinx.android.synthetic.main.activity_details.poster
 import kotlinx.android.synthetic.main.fragment_detail.*
-import ru.nortti.filmssearch.Constants.getImageUrl
 import ru.nortti.filmssearch.Constants.getImageUrlBig
 
 import ru.nortti.filmssearch.R
 import ru.nortti.filmssearch.arch.models.DetailsViewModel
+import ru.nortti.filmssearch.network.models.ErrorResponse
 import ru.nortti.filmssearch.network.models.MovieDetail
-import ru.nortti.filmssearch.network.models.MovieResponce
 
 class DetailsFragment : Fragment() {
 
@@ -52,24 +51,29 @@ class DetailsFragment : Fragment() {
 
             Glide
                 .with(this)
-                .load(getImageUrlBig(it.posterPath))
+                .load(getImageUrlBig(it.poster_path))
                 .into(poster)
+
 
             toolbar.title = it.title
             descriptionTx.text = it.overview
         })
+
+        viewModel.errors.observe(this.viewLifecycleOwner, Observer<Throwable>{ t ->
+            Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT).setAction(getString(
+                R.string.repeat), View.OnClickListener {
+                viewModel.getDetailedData(movie_id)
+            }).show()
+        } )
+        viewModel.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error -> Snackbar.make(requireView(), String.format("%s %s", error.status_code, error.status_message), Snackbar.LENGTH_SHORT).setAction(getString(
+            R.string.repeat), View.OnClickListener {
+            viewModel.getDetailedData(movie_id)
+        }).show() })
     }
 
     companion object {
         private val ARG_PARAM = "movie_id"
 
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param myObject as MyObject.
-         * @return A new instance of fragment MyFragment.
-         */
         fun newInstance(id: Int): DetailsFragment {
             val fragment = DetailsFragment()
             val args = Bundle()

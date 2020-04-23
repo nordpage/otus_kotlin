@@ -7,27 +7,36 @@ import ru.nortti.filmssearch.App
 import ru.nortti.filmssearch.Constants
 import ru.nortti.filmssearch.SharedPreference
 import ru.nortti.filmssearch.network.ApiInteractor
-import ru.nortti.filmssearch.network.models.MovieResponce
+import ru.nortti.filmssearch.network.models.ErrorResponse
+import ru.nortti.filmssearch.network.models.MovieResponse
 
 class MoviesViewModel: ViewModel() {
-    private val moviesLiveData = MutableLiveData<MovieResponce>()
-    private val errorLiveData = MutableLiveData<String>()
+    private val moviesLiveData = MutableLiveData<MovieResponse>()
+    private val errorLiveData = MutableLiveData<Throwable>()
+    private val customErrorLiveData = MutableLiveData<ErrorResponse>()
     private val apiInteractor = App.getInstance().getInteractor()
     private val prefs: SharedPreference = SharedPreference(App.getInstance().applicationContext)
-    val movies : LiveData<MovieResponce>
+    val movies : LiveData<MovieResponse>
         get() = moviesLiveData
 
-    val errors: LiveData<String>
+    val errors: LiveData<Throwable>
         get() = errorLiveData
+
+    val customErrors: LiveData<ErrorResponse>
+        get() = customErrorLiveData
 
     fun onGetData() {
         apiInteractor.getTopMovies(Constants.API_KEY, prefs.getValueString(Constants.LANGUAGE)!!, object : ApiInteractor.GetMoviesCallback {
-            override fun onSuccess(movies: MovieResponce) {
+            override fun onSuccess(movies: MovieResponse) {
                 moviesLiveData.postValue(movies)
             }
 
-            override fun onError(error: String) {
+            override fun onError(error: Throwable) {
                 errorLiveData.postValue(error)
+            }
+
+            override fun onCustomError(error: ErrorResponse) {
+                customErrorLiveData.postValue(error)
             }
 
         })
@@ -35,12 +44,16 @@ class MoviesViewModel: ViewModel() {
 
     fun onGetPagedData(page: Int) {
         apiInteractor.getTopMoviesPagination(Constants.API_KEY, prefs.getValueString(Constants.LANGUAGE)!!, page, object : ApiInteractor.GetMoviesCallback {
-            override fun onSuccess(movies: MovieResponce) {
+            override fun onSuccess(movies: MovieResponse) {
                 moviesLiveData.postValue(movies)
             }
 
-            override fun onError(error: String) {
+            override fun onError(error: Throwable) {
                 errorLiveData.postValue(error)
+            }
+
+            override fun onCustomError(error: ErrorResponse) {
+                customErrorLiveData.postValue(error)
             }
 
         })

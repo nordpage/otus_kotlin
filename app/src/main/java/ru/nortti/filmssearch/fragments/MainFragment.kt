@@ -11,20 +11,16 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ru.nortti.filmssearch.*
-import ru.nortti.filmssearch.Constants.API_KEY
-import ru.nortti.filmssearch.Constants.LANGUAGE
 import ru.nortti.filmssearch.Constants.PAGE_START
 import ru.nortti.filmssearch.Constants.TOTAL_PAGES
 import ru.nortti.filmssearch.adapters.MovieAdapter
 import ru.nortti.filmssearch.adapters.PaginationScrollListener
 import ru.nortti.filmssearch.arch.models.MoviesViewModel
-import ru.nortti.filmssearch.network.ApiInterface
-import ru.nortti.filmssearch.network.models.MovieResponce
+import ru.nortti.filmssearch.network.models.ErrorResponse
+import ru.nortti.filmssearch.network.models.MovieResponse
 import ru.nortti.filmssearch.utils.ItemAnimator
 import ru.nortti.filmssearch.utils.ItemOffsetDecoration
 
@@ -50,10 +46,6 @@ class MainFragment : Fragment() {
     private var isLastPage = false
     private var current_page = PAGE_START
     lateinit var layoutManager: LinearLayoutManager
-    var callback: Callback<MovieResponce>? = null
-    var result: Call<MovieResponce>? = null
-    var pagination: Call<MovieResponce>? = null
-    var apiService: ApiInterface? = null
 
     private var viewModel: MoviesViewModel? = null
 
@@ -109,22 +101,6 @@ class MainFragment : Fragment() {
                 transaction.commit()
             }
         })
-
-
-//        apiService = App.getInstance().getService()
-//        result =
-//            apiService!!.getTopRatedMovies(API_KEY, prefs.getValueString(LANGUAGE)!!)
-//        callback = object : Callback<MovieResponce> {
-//            override fun onFailure(call: Call<MovieResponce>, t: Throwable) {
-//                Log.e("Error", t.toString())
-//            }
-//
-//            override fun onResponse(call: Call<MovieResponce>, response: Response<MovieResponce>) {
-//                val list = response.body()!!.results
-//                movieAdapter.setMovies(list)
-//            }
-//
-//        }
     }
 
 
@@ -134,7 +110,19 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
-        viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponce> { movie -> movieAdapter!!.setMovies(movie.results)})
+        viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponse> { movie -> movieAdapter.setMovies(movie.results)})
+        viewModel!!.errors.observe(this.viewLifecycleOwner, Observer<Throwable>{ t ->
+            Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT).setAction(getString(
+                R.string.repeat), View.OnClickListener {
+                viewModel!!.onGetData()
+            }).show()
+        } )
+        viewModel!!.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error -> Snackbar.make(requireView(), String.format("%s %s", error.status_code, error.status_message), Snackbar.LENGTH_SHORT).setAction(getString(
+                    R.string.repeat), View.OnClickListener {
+            viewModel!!.onGetData()
+        }).show() })
+
+
         rvList.layoutManager = layoutManager
         rvList.adapter = movieAdapter
         rvList.addItemDecoration(ItemOffsetDecoration(20))
@@ -169,18 +157,7 @@ class MainFragment : Fragment() {
         viewModel!!.onGetData()
 
         swipeRefreshLayout.setOnRefreshListener {
-//            Handler().postDelayed(object: Runnable{
-//                override fun run() {
-//                    result =
-//                        apiService!!.getTopRatedMovies(API_KEY, prefs.getValueString(LANGUAGE)!!)
-//                    result!!.enqueue(callback)
-//                    swipeRefreshLayout.isRefreshing = false
-//                }
-//
-//            }, 1500)
-
-            viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponce> { movie -> movieAdapter!!.setMovies(movie.results) })
-
+            viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponse> { movie -> movieAdapter!!.setMovies(movie.results) })
             swipeRefreshLayout.isRefreshing = false
         }
     }

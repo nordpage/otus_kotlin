@@ -42,11 +42,11 @@ class MovieAdapter(var context: Context, var callback: MovieCallback) : Recycler
             itemView.title.text = item.title
             Glide
                 .with(itemView.context)
-                .load(getImageUrl(item.posterPath))
+                .load(getImageUrl(item.poster_path))
                 .centerCrop()
                 .into(itemView.poster)
 
-            itemView.ratingTx.text = String.format(itemView.context.getString(R.string.rating), item.voteAverage, item.voteCount)
+            itemView.ratingTx.text = String.format(itemView.context.getString(R.string.rating), item.vote_average, item.vote_count)
 
             itemView.details.setOnClickListener {
                 callback.onClick(item.id.toInt())

@@ -25,4 +25,5 @@
     <string name="day">Дневная</string>
     <string name="night">Ночная</string>
     <string name="rating">Рейтинг: %s (%s голосов)</string>
+    <string name="repeat">Повторить</string>
 </resources>
