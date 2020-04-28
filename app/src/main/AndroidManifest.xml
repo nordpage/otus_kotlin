@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".FavoritesActivity"></activity>
         <activity android:name=".DetailsActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".view.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

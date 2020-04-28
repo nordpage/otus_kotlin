@@ -1,13 +1,13 @@
 package ru.nortti.filmssearch
 
 import android.app.Application
-import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import ru.nortti.filmssearch.Constants.LANGUAGE
-import ru.nortti.filmssearch.Constants.THEME
-import ru.nortti.filmssearch.network.ApiClient
-import ru.nortti.filmssearch.network.ApiInteractor
-import ru.nortti.filmssearch.network.ApiInterface
+import ru.nortti.filmssearch.api.ApiClient
+import ru.nortti.filmssearch.api.ApiInteractor
+import ru.nortti.filmssearch.api.ApiInterface
+import ru.nortti.filmssearch.utils.LANGUAGE
+import ru.nortti.filmssearch.utils.SharedPreference
+import ru.nortti.filmssearch.utils.THEME
 
 class App : Application() {
 
