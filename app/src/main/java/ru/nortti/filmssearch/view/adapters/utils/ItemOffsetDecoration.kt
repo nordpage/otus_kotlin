@@ -1,4 +1,4 @@
-package ru.nortti.filmssearch.utils
+package ru.nortti.filmssearch.view.adapters.utils
 
 import android.graphics.Rect
 import android.view.View

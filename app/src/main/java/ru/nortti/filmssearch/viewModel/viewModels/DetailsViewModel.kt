@@ -10,24 +10,41 @@ import ru.nortti.filmssearch.model.remote.ErrorResponse
 import ru.nortti.filmssearch.model.remote.MovieDetail
 import ru.nortti.filmssearch.utils.API_KEY
 import ru.nortti.filmssearch.utils.LANGUAGE
-import ru.nortti.filmssearch.viewModel.repositories.DetailsRepository
 
 class DetailsViewModel : ViewModel() {
+    private val moviesLiveData = MutableLiveData<MovieDetail>()
+    private val errorLiveData = MutableLiveData<Throwable>()
+    private val customErrorLiveData = MutableLiveData<ErrorResponse>()
 
-    private val detailsRepository = DetailsRepository.getInstance()
-
-
+    private val apiInteractor = App.getInstance().getInteractor()
+    private val prefs: SharedPreference =
+        SharedPreference(App.getInstance().applicationContext)
     val movies : LiveData<MovieDetail>
-        get() = detailsRepository.getDetailedData()
+        get() = moviesLiveData
 
     val errors: LiveData<Throwable>
-        get() = detailsRepository.getErrorData()
+        get() = errorLiveData
 
     val customErrors: LiveData<ErrorResponse>
-        get() = detailsRepository.getCustomErrorData()
+        get() = customErrorLiveData
 
 
     fun getDetailedData(id: Int) {
-        detailsRepository.getMovieDetails(id)
+        apiInteractor.getDetailedMovie(
+            API_KEY, prefs.getValueString(
+                LANGUAGE)!!, id, object : ApiInteractor.GetMoviesDetails {
+            override fun onSuccess(movies: MovieDetail) {
+                moviesLiveData.postValue(movies)
+            }
+
+            override fun onError(error: Throwable) {
+                errorLiveData.postValue(error)
+            }
+
+            override fun onCustomError(error: ErrorResponse) {
+                customErrorLiveData.postValue(error)
+            }
+
+        })
     }
 }

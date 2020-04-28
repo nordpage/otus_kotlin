@@ -1,25 +1,25 @@
 package ru.nortti.filmssearch.view.fragments
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_favorite.*
 import ru.nortti.filmssearch.*
-import ru.nortti.filmssearch.model.local.models.Favorite
-import ru.nortti.filmssearch.view.adapters.FavoritesAdapter
-import ru.nortti.filmssearch.viewModel.viewModels.FavoritesViewModel
+import ru.nortti.filmssearch.view.adapters.FilmsAdapter
+import ru.nortti.filmssearch.utils.SharedPreference
+import ru.nortti.filmssearch.view.adapters.MovieAdapter
 
 /**
  * A simple [Fragment] subclass.
  */
 class FavoriteFragment : Fragment() {
-    lateinit var adapter: FavoritesAdapter
-    private var viewModel: FavoritesViewModel? = null
+    lateinit var prefs: SharedPreference
+    lateinit var adapter: MovieAdapter
 
     companion object {
         private const val TAG = "FavoritesActivity"
@@ -36,35 +36,34 @@ class FavoriteFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        prefs = SharedPreference(requireContext())
 
-
-        adapter = FavoritesAdapter(
-                object : FavoritesAdapter.FavoritesCallback {
-                    override fun onClick(movie_id: Int) {
-                        val transaction = requireActivity().supportFragmentManager.beginTransaction()
-                        val frag = DetailsFragment.newInstance(movie_id)
-                        transaction.replace(R.id.container, frag)
-                        transaction.addToBackStack(null)
-                        transaction.commit()
-                    }
-
-                    override fun onRemove(movie_id: Int) {
-                        viewModel!!.deleteById(movie_id)
-                        adapter.notifyDataSetChanged()
-                    }
+        adapter = MovieAdapter(
+            requireContext(),
+            prefs,
+            object : MovieAdapter.MovieCallback {
+                override fun onMovieAdded() {
 
                 }
+
+                override fun onClick(movie_id: Int) {
+                    val transaction = requireActivity().supportFragmentManager.beginTransaction()
+                    val frag = DetailsFragment.newInstance(movie_id)
+                    transaction.replace(R.id.container, frag)
+                    transaction.addToBackStack(null)
+                    transaction.commit()
+                }
+
+            }
         )
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        rvList.layoutManager = GridLayoutManager(requireContext(), 2)
+        rvList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         rvList.adapter = adapter
-
-        viewModel = ViewModelProviders.of(activity!!).get(FavoritesViewModel::class.java)
-        viewModel!!.favorites.observe(this.viewLifecycleOwner, Observer<List<Favorite>> { list -> adapter.setFavorites(list)})
+        adapter.setMovies(prefs.getFavorites())
     }
 
 }

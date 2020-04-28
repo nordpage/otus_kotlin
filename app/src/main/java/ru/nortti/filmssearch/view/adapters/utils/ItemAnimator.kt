@@ -1,4 +1,4 @@
-package ru.nortti.filmssearch.utils
+package ru.nortti.filmssearch.view.adapters.utils
 
 import android.R
 import android.animation.Animator
