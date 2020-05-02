@@ -1,23 +1,23 @@
-package ru.nortti.filmssearch
+package ru.nortti.filmssearch.utils
 
 import android.content.Context
 import android.content.SharedPreferences
 import android.text.TextUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import ru.nortti.filmssearch.Constants.TASKS
+import ru.nortti.filmssearch.model.remote.Movie
 
 class SharedPreference(val context: Context) {
     private val PREFS_NAME = "FIND_FILMS"
     val sharedPref: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    var films: MutableList<Film> = mutableListOf()
+    var films: MutableList<Movie> = mutableListOf()
     fun save(KEY_NAME: String, text: String) {
 
         val editor: SharedPreferences.Editor = sharedPref.edit()
 
         editor.putString(KEY_NAME, text)
 
-        editor!!.commit()
+        editor.apply()
     }
 
     fun save(KEY_NAME: String, value: Int) {
@@ -25,29 +25,48 @@ class SharedPreference(val context: Context) {
 
         editor.putInt(KEY_NAME, value)
 
-        editor.commit()
+        editor.apply()
     }
 
-    fun save(KEY_NAME: String, status: Boolean) {
-
+    fun save(KEY_NAME: String, value: Long) {
         val editor: SharedPreferences.Editor = sharedPref.edit()
 
-        editor.putBoolean(KEY_NAME, status!!)
+        editor.putLong(KEY_NAME, value)
 
         editor.apply()
     }
-    fun addToFav(film: Film) {
+
+    fun save(KEY_NAME: String, status: Boolean) {
+        val editor: SharedPreferences.Editor = sharedPref.edit()
+        editor.putBoolean(KEY_NAME, status)
+        editor.apply()
+    }
+
+    fun setUpdateTime(time: Long) {
+        save(UPDATE_TIME, time)
+    }
+
+    fun getUpdateTime() : Long {
+        return sharedPref.getLong(UPDATE_TIME, 0L)
+    }
+
+    fun addToFav(film: Movie) {
         films.add(film)
         save(films)
     }
 
-    fun removeFromFav(film: Film){
+    fun addToFav(pos: Int, film: Movie) {
+        films.add(pos, film)
+        save(films)
+    }
+
+    fun removeFromFav(film: Movie){
         if (films.contains(film)) {
             films.remove(film)
             save(films)
         }
     }
-    fun save(tasks: List<Film>) {
+    fun save(tasks: List<Movie>) {
         val gson = Gson()
         val editor: SharedPreferences.Editor = sharedPref.edit()
         val json = gson.toJson(tasks)
@@ -62,12 +81,12 @@ class SharedPreference(val context: Context) {
 
     }
 
-    fun getFavorites() : MutableList<Film> {
+    fun getFavorites() : MutableList<Movie> {
         val gson = Gson()
         val json = sharedPref.getString(TASKS,"")
         if (!TextUtils.isEmpty(json)) {
             films.clear()
-            val listType = object : TypeToken<List<Film>>() {}.type
+            val listType = object : TypeToken<List<Movie>>() {}.type
             films.addAll(gson.fromJson(json, listType))
         }
         return films

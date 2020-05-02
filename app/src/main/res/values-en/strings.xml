@@ -10,4 +10,16 @@
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="favorites">Favorites</string>
+    <string name="films">Films</string>
+    <string name="settings">Settings</string>
+    <string name="add_to_fav">Movie %s added to favorites</string>
+    <string name="remove_from_fav">The movie %s was removed from Favorites</string>
+    <string name="undo">Undo</string>
+    <string name="lang" translatable="false">English</string>
+    <string name="current_lang">Current language: %s</string>
+    <string name="current_theme">Current theme: %s</string>
+    <string name="day">Day</string>
+    <string name="night">Night</string>
+    <string name="rating">Rating: %s (%s votes)</string>
+    <string name="repeat">Repeat</string>
 </resources>

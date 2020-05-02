@@ -9,4 +9,21 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="favorites">Избранное</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="films">Фильмы</string>
+    <string name="settings">Настройки</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
+    <string name="add_to_fav">Фильм %s добавлен в Избранное</string>
+    <string name="remove_from_fav">Фильм %s был удален из Избранного</string>
+    <string name="undo">Отмена</string>
+    <string name="lang">Русский</string>
+    <string name="current_lang">Текущий язык: %s</string>
+    <string name="current_theme">Текущая тема: %s</string>
+    <string name="day">Дневная</string>
+    <string name="night">Ночная</string>
+    <string name="rating">Рейтинг: %s (%s голосов)</string>
+    <string name="repeat">Повторить</string>
 </resources>
