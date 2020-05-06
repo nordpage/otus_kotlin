@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_favorite.*
@@ -13,6 +14,7 @@ import ru.nortti.filmssearch.*
 import ru.nortti.filmssearch.view.adapters.FilmsAdapter
 import ru.nortti.filmssearch.utils.SharedPreference
 import ru.nortti.filmssearch.view.adapters.MovieAdapter
+import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -20,6 +22,7 @@ import ru.nortti.filmssearch.view.adapters.MovieAdapter
 class FavoriteFragment : Fragment() {
     lateinit var prefs: SharedPreference
     lateinit var adapter: MovieAdapter
+    private var transferViewModel : TransferViewModel? = null
 
     companion object {
         private const val TAG = "FavoritesActivity"
@@ -47,9 +50,9 @@ class FavoriteFragment : Fragment() {
                 }
 
                 override fun onClick(movie_id: Int) {
+                    transferViewModel!!.setMovieIdData(movie_id)
                     val transaction = requireActivity().supportFragmentManager.beginTransaction()
-                    val frag = DetailsFragment.newInstance(movie_id)
-                    transaction.replace(R.id.container, frag)
+                    transaction.replace(R.id.container, DetailsFragment())
                     transaction.addToBackStack(null)
                     transaction.commit()
                 }
@@ -64,6 +67,9 @@ class FavoriteFragment : Fragment() {
         rvList.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         rvList.adapter = adapter
         adapter.setMovies(prefs.getFavorites())
+
+        transferViewModel = ViewModelProviders.of(activity!!).get(TransferViewModel::class.java)
+
     }
 
 }

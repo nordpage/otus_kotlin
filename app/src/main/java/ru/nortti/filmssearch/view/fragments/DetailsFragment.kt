@@ -18,11 +18,14 @@ import ru.nortti.filmssearch.viewModel.viewModels.DetailsViewModel
 import ru.nortti.filmssearch.model.remote.ErrorResponse
 import ru.nortti.filmssearch.model.remote.MovieDetail
 import ru.nortti.filmssearch.utils.Extensions.getImageUrlBig
+import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
 
 class DetailsFragment : Fragment() {
 
     var movie_id: Int = 0
     private lateinit var viewModel: DetailsViewModel
+    private var transferViewModel : TransferViewModel? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +48,10 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DetailsViewModel::class.java)
-        viewModel.getDetailedData(movie_id)
+        transferViewModel = ViewModelProviders.of(activity!!).get(TransferViewModel::class.java)
+
+        viewModel = ViewModelProviders.of(activity!!).get(DetailsViewModel::class.java)
+        viewModel.getDetailedData(transferViewModel!!.getMovieIdData())
         viewModel.movies.observe(this.viewLifecycleOwner, Observer<MovieDetail> {
 
             Glide
@@ -69,6 +74,7 @@ class DetailsFragment : Fragment() {
             R.string.repeat), View.OnClickListener {
             viewModel.getDetailedData(movie_id)
         }).show() })
+
     }
 
     companion object {

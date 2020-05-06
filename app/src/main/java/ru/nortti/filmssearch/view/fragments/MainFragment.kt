@@ -21,6 +21,7 @@ import ru.nortti.filmssearch.model.remote.MovieResponse
 import ru.nortti.filmssearch.utils.*
 import ru.nortti.filmssearch.view.adapters.utils.ItemAnimator
 import ru.nortti.filmssearch.view.adapters.utils.ItemOffsetDecoration
+import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
 
 /**
  * A simple [Fragment] subclass.
@@ -43,11 +44,7 @@ class MainFragment : Fragment() {
     lateinit var layoutManager: LinearLayoutManager
 
     private var viewModel: MoviesViewModel? = null
-
-    companion object {
-        private const val TAG = "MainActivity"
-        private const val RESULT_CODE = 0
-    }
+    private var transferViewModel : TransferViewModel? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,18 +56,15 @@ class MainFragment : Fragment() {
             }
 
             override fun onClick(movie_id: Int) {
+                transferViewModel!!.setMovieIdData(movie_id)
                 val transaction = requireActivity().supportFragmentManager.beginTransaction()
-                val frag = DetailsFragment.newInstance(movie_id)
-                transaction.replace(R.id.container, frag)
+                transaction.replace(R.id.container, DetailsFragment())
                 transaction.addToBackStack(null)
                 transaction.commit()
             }
 
         })
-
         layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-
-
     }
 
 
@@ -92,6 +86,7 @@ class MainFragment : Fragment() {
             viewModel!!.onGetData()
         }).show() })
 
+        transferViewModel = ViewModelProviders.of(activity!!).get(TransferViewModel::class.java)
 
         rvList.layoutManager = layoutManager
         rvList.adapter = movieAdapter
