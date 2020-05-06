@@ -8,6 +8,9 @@ import ru.nortti.filmssearch.api.ApiInterface
 import ru.nortti.filmssearch.utils.LANGUAGE
 import ru.nortti.filmssearch.utils.SharedPreference
 import ru.nortti.filmssearch.utils.THEME
+import timber.log.Timber
+import timber.log.Timber.DebugTree
+
 
 class App : Application() {
 
@@ -33,11 +36,18 @@ class App : Application() {
         INSTANCE = this
         initRetrofit()
         initInteractor()
+
+        if (BuildConfig.DEBUG) {
+            Timber.plant(DebugTree())
+        } else {
+            Timber.plant()
+        }
+
         super.onCreate()
     }
 
     fun initRetrofit(){
-        var retrofit = ApiClient.getClient()
+        val retrofit = ApiClient.getClient()
         service = retrofit.create(ApiInterface::class.java)
     }
     fun initInteractor() {

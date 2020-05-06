@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkerParameters
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_main.*
 import ru.nortti.filmssearch.R
@@ -22,6 +24,7 @@ import ru.nortti.filmssearch.view.adapters.utils.ItemOffsetDecoration
 import ru.nortti.filmssearch.view.adapters.utils.PaginationScrollListener
 import ru.nortti.filmssearch.viewModel.viewModels.FavoritesViewModel
 import ru.nortti.filmssearch.viewModel.viewModels.MoviesViewModel
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass.
@@ -51,27 +54,42 @@ class MainFragment : Fragment() {
 
         prefs = SharedPreference(requireContext())
 
-
     }
 
 
-
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        var workerRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(FilmWorker::class.java).build()
 
+        rvList.showShimmer()
+        super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)
-        viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponse> { movie -> movieAdapter.setMovies(movie.results)})
-        viewModel!!.errors.observe(this.viewLifecycleOwner, Observer<Throwable>{ t ->
-            Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT).setAction(getString(
-                R.string.repeat), View.OnClickListener {
+        viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponse> { movie ->
+            run {
+                rvList.hideShimmer()
+                movieAdapter.setMovies(movie.results)
+            }
+        })
+        viewModel!!.errors.observe(this.viewLifecycleOwner, Observer<Throwable> { t ->
+            Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT)
+                .setAction(getString(
+                    R.string.repeat
+                )
+                ) {
+                    viewModel!!.onGetData()
+                }.show()
+        })
+        viewModel!!.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error ->
+            Snackbar.make(
+                requireView(),
+                String.format("%s %s", error.status_code, error.status_message),
+                Snackbar.LENGTH_SHORT
+            ).setAction(getString(
+                R.string.repeat
+            )
+            ) {
                 viewModel!!.onGetData()
-            }).show()
-        } )
-        viewModel!!.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error -> Snackbar.make(requireView(), String.format("%s %s", error.status_code, error.status_message), Snackbar.LENGTH_SHORT).setAction(getString(
-                    R.string.repeat), View.OnClickListener {
-            viewModel!!.onGetData()
-        }).show() })
+            }.show()
+        })
 
         favoriteViewModel = ViewModelProviders.of(activity!!).get(FavoritesViewModel::class.java)
         layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -103,7 +121,7 @@ class MainFragment : Fragment() {
                 isLoading = true
                 swipeRefreshLayout.isRefreshing = isLoading
                 current_page = current_page + 1
-                Log.d("MainFragment", "loadNextPage: $current_page")
+                Timber.d( "loadNextPage: $current_page")
                 Handler().postDelayed(object : Runnable {
                     override fun run() {
                         loadNextPage()
@@ -130,17 +148,25 @@ class MainFragment : Fragment() {
 
 
         swipeRefreshLayout.setOnRefreshListener {
-            viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponse> { movie -> movieAdapter.setMovies(movie.results) })
+            viewModel!!.movies.observe(
+                this.viewLifecycleOwner,
+                Observer<MovieResponse> { movie -> movieAdapter.setMovies(movie.results) })
             swipeRefreshLayout.isRefreshing = false
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Extensions.setLocale(requireContext(), prefs.getValueString(
-            LANGUAGE)!!)
-        Extensions.setAppTheme(prefs.getValueString(
-            THEME)!!)
+        Extensions.setLocale(
+            requireContext(), prefs.getValueString(
+                LANGUAGE
+            )!!
+        )
+        Extensions.setAppTheme(
+            prefs.getValueString(
+                THEME
+            )!!
+        )
         movieAdapter.notifyDataSetChanged()
     }
 
