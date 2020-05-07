@@ -22,4 +22,6 @@
     <string name="night">Night</string>
     <string name="rating">Rating: %s (%s votes)</string>
     <string name="repeat">Repeat</string>
+    <string name="notification_title">Film reminder</string>
+    <string name="notification_text">You postponed the movie %s.\nIt\'s time to see it!</string>
 </resources>

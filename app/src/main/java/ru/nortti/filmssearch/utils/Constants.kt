@@ -13,3 +13,7 @@ package ru.nortti.filmssearch.utils
     const val TOTAL_PAGES = 5
 
     const val ROOM_DB_NAME = "ROOM_DB_NAME"
+
+    const val EXTRA_TITLE = "title"
+    const val EXTRA_TEXT = "text"
+    const val EXTRA_ID = "id"

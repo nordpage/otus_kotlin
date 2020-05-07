@@ -39,6 +39,7 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
+    var movie_id:Int? = 0
     lateinit var movieAdapter: MovieAdapter
     lateinit var prefs: SharedPreference
     private var isLoading = false
@@ -58,8 +59,11 @@ class MainFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        var workerRequest: OneTimeWorkRequest = OneTimeWorkRequest.Builder(FilmWorker::class.java).build()
 
+        if (arguments!!.getInt(EXTRA_ID) != 0) {
+            movie_id = arguments!!.getInt(EXTRA_ID)
+
+        }
         rvList.showShimmer()
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!).get(MoviesViewModel::class.java)

@@ -3,8 +3,13 @@ package ru.nortti.filmssearch.utils
 import android.content.Context
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.work.Data
+import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
+import org.joda.time.format.DateTimeFormat
 import ru.nortti.filmssearch.model.local.models.Favorite
 import ru.nortti.filmssearch.model.remote.Movie
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 object Extensions {
@@ -38,4 +43,22 @@ object Extensions {
     public fun toFavorite(item: Movie) : Favorite {
        return Favorite(id = item.id, title = item.title, poster = item.poster_path)
     }
+
+    fun createWorkInputData(title: String, text: String, id: Int) : Data {
+        return Data.Builder()
+            .putString(EXTRA_TITLE, title)
+            .putString(EXTRA_TEXT, text)
+            .putInt(EXTRA_ID, id)
+            .build()
+    }
+    fun getAlertTime(time: String) : Long {
+        var formatter = DateTimeFormat.forPattern("dd.MM.yyyy HH:mm")
+        var date = DateTime.parse(time,formatter).withZone(DateTimeZone.forID("Europe/Moscow"))
+        return date.millis
+    }
+
+    fun generateKey() : String {
+        return UUID.randomUUID().toString()
+    }
+
 }

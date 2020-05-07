@@ -26,4 +26,6 @@
     <string name="night">Ночная</string>
     <string name="rating">Рейтинг: %s (%s голосов)</string>
     <string name="repeat">Повторить</string>
+    <string name="notification_title">Напоминание о фильме</string>
+    <string name="notification_text">Вы отложили фильм %s.\nПора его посмотреть!</string>
 </resources>

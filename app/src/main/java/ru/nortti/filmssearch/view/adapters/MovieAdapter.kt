@@ -3,6 +3,7 @@ package ru.nortti.filmssearch.view.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.snackbar.Snackbar
@@ -10,8 +11,13 @@ import kotlinx.android.synthetic.main.item_film.view.*
 import ru.nortti.filmssearch.R
 import ru.nortti.filmssearch.model.remote.Movie
 import ru.nortti.filmssearch.utils.Extensions
+import ru.nortti.filmssearch.utils.Extensions.createWorkInputData
+import ru.nortti.filmssearch.utils.Extensions.generateKey
 import ru.nortti.filmssearch.utils.Extensions.getImageUrl
+import ru.nortti.filmssearch.utils.FilmWorker
 import ru.nortti.filmssearch.viewModel.viewModels.FavoritesViewModel
+import timber.log.Timber
+import java.util.*
 
 class MovieAdapter(var model : FavoritesViewModel, var callback: MovieCallback) : RecyclerView.Adapter<MovieAdapter.ViewHolder>() {
 
@@ -82,6 +88,16 @@ class MovieAdapter(var model : FavoritesViewModel, var callback: MovieCallback) 
 
                 return@setOnLongClickListener false
             }
+
+            itemView.laterBut.setOnClickListener {
+                val tag = generateKey()
+                val title = itemView.context.getString(R.string.notification_title)
+                val text = String.format(itemView.context.getString(R.string.notification_text), item.title)
+                val alertTime = getAlertTime(2) - System.currentTimeMillis()
+                val data = createWorkInputData(title, text, item.id)
+                FilmWorker.scheduleReminder(alertTime, data, tag)
+
+            }
         }
     }
 
@@ -103,6 +119,12 @@ class MovieAdapter(var model : FavoritesViewModel, var callback: MovieCallback) 
     interface MovieCallback {
         fun onMovieAdded()
         fun onClick(movie_id: Int)
+    }
+
+    private fun getAlertTime(userInput: Int): Long {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.MINUTE, userInput)
+        return cal.timeInMillis
     }
 
 }
