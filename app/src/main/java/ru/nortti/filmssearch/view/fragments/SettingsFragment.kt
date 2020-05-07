@@ -16,7 +16,7 @@ import ru.nortti.filmssearch.utils.THEME
  */
 class SettingsFragment : Fragment() {
 
-    lateinit var prefs: SharedPreference
+    private lateinit var prefs: SharedPreference
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -41,7 +41,7 @@ class SettingsFragment : Fragment() {
                 }
                 requireActivity().recreate()
         }
-        lang_sub.setText(String.format(getString(R.string.current_lang), getString(R.string.lang)))
+        lang_sub.text = String.format(getString(R.string.current_lang), getString(R.string.lang))
 
         theme_but.setOnClickListener {
             if (prefs.getValueString(THEME).equals("DAY")) {

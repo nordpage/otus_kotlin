@@ -22,7 +22,7 @@ class ApiInteractor(private val service: ApiInterface) {
                 } else {
                     val gson = Gson()
                     val type = object : TypeToken<ErrorResponse>() {}.type
-                    var errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
+                    val errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
                     callback.onCustomError(errorResponse!!)
                 }
             }
@@ -42,7 +42,7 @@ class ApiInteractor(private val service: ApiInterface) {
                 } else {
                     val gson = Gson()
                     val type = object : TypeToken<ErrorResponse>() {}.type
-                    var errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
+                    val errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
                     callback.onCustomError(errorResponse!!)
                 }
             }
@@ -62,7 +62,7 @@ class ApiInteractor(private val service: ApiInterface) {
                 } else {
                     val gson = Gson()
                     val type = object : TypeToken<ErrorResponse>() {}.type
-                    var errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
+                    val errorResponse: ErrorResponse? = gson.fromJson(response.errorBody()!!.charStream(), type)
                     callback.onCustomError(errorResponse!!)
                 }
             }

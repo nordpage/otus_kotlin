@@ -2,7 +2,6 @@ package ru.nortti.filmssearch.view.activities
 
 import android.app.AlertDialog
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -13,11 +12,6 @@ import ru.nortti.filmssearch.view.fragments.MainFragment
 import ru.nortti.filmssearch.view.fragments.SettingsFragment
 
 class MainActivity : AppCompatActivity() {
-
-    companion object {
-        private const val TAG = "MainActivity"
-        private const val RESULT_CODE = 0
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,16 +40,6 @@ class MainActivity : AppCompatActivity() {
             false
 
         }
-
-    }
-
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
 
     }
 
@@ -106,14 +90,13 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage(resources.getString(R.string.want_exit))
 
         // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+        builder.setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
             finish()
-
         }
 
 
         // Display a negative button on alert dialog
-        builder.setNegativeButton(resources.getString(R.string.no)) { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
             dialog.dismiss()
         }
 

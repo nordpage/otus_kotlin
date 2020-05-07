@@ -1,17 +1,14 @@
 package ru.nortti.filmssearch.view.fragments
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_favorite.*
-import ru.nortti.filmssearch.*
-import ru.nortti.filmssearch.view.adapters.FilmsAdapter
+import ru.nortti.filmssearch.R
 import ru.nortti.filmssearch.utils.SharedPreference
 import ru.nortti.filmssearch.view.adapters.MovieAdapter
 import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
@@ -20,14 +17,9 @@ import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
  * A simple [Fragment] subclass.
  */
 class FavoriteFragment : Fragment() {
-    lateinit var prefs: SharedPreference
-    lateinit var adapter: MovieAdapter
+    private lateinit var prefs: SharedPreference
+    private lateinit var adapter: MovieAdapter
     private var transferViewModel : TransferViewModel? = null
-
-    companion object {
-        private const val TAG = "FavoritesActivity"
-        private const val RESULT_CODE = 0
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

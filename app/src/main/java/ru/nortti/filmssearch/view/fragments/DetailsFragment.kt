@@ -22,7 +22,6 @@ import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
 
 class DetailsFragment : Fragment() {
 
-    var movie_id: Int = 0
     private lateinit var viewModel: DetailsViewModel
     private var transferViewModel : TransferViewModel? = null
 
@@ -32,18 +31,6 @@ class DetailsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         return inflater.inflate(R.layout.details_fragment, container, false)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        if (arguments != null) {
-            movie_id = arguments!!.getInt(ARG_PARAM)
-        }
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,26 +53,16 @@ class DetailsFragment : Fragment() {
 
         viewModel.errors.observe(this.viewLifecycleOwner, Observer<Throwable>{ t ->
             Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT).setAction(getString(
-                R.string.repeat), View.OnClickListener {
-                viewModel.getDetailedData(movie_id)
-            }).show()
+                R.string.repeat)
+            ) {
+                viewModel.getDetailedData(transferViewModel!!.getMovieIdData())
+            }.show()
         } )
         viewModel.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error -> Snackbar.make(requireView(), String.format("%s %s", error.status_code, error.status_message), Snackbar.LENGTH_SHORT).setAction(getString(
-            R.string.repeat), View.OnClickListener {
-            viewModel.getDetailedData(movie_id)
-        }).show() })
+            R.string.repeat)
+        ) {
+            viewModel.getDetailedData(transferViewModel!!.getMovieIdData())
+        }.show() })
 
-    }
-
-    companion object {
-        private val ARG_PARAM = "movie_id"
-
-        fun newInstance(id: Int): DetailsFragment {
-            val fragment = DetailsFragment()
-            val args = Bundle()
-            args.putInt(ARG_PARAM, id)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

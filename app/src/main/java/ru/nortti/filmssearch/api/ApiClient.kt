@@ -11,8 +11,8 @@ class ApiClient {
 
 
     companion object {
-        var logging = HttpLoggingInterceptor()
-        var retrofit: Retrofit? = null
+        private var logging = HttpLoggingInterceptor()
+        private var retrofit: Retrofit? = null
 
         @JvmStatic
         fun getClient(): Retrofit {

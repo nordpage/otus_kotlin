@@ -2,7 +2,6 @@ package ru.nortti.filmssearch.view.fragments
 
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -36,11 +35,11 @@ class MainFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 
-    lateinit var movieAdapter: MovieAdapter
-    lateinit var prefs: SharedPreference
+    private lateinit var movieAdapter: MovieAdapter
+    private lateinit var prefs: SharedPreference
     private var isLoading = false
     private var isLastPage = false
-    private var current_page = PAGE_START
+    private var currentPage = PAGE_START
     lateinit var layoutManager: LinearLayoutManager
 
     private var viewModel: MoviesViewModel? = null
@@ -77,14 +76,16 @@ class MainFragment : Fragment() {
         viewModel!!.movies.observe(this.viewLifecycleOwner, Observer<MovieResponse> { movie -> movieAdapter.setMovies(movie.results)})
         viewModel!!.errors.observe(this.viewLifecycleOwner, Observer<Throwable>{ t ->
             Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT).setAction(getString(
-                R.string.repeat), View.OnClickListener {
+                R.string.repeat)
+            ) {
                 viewModel!!.onGetData()
-            }).show()
+            }.show()
         } )
         viewModel!!.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error -> Snackbar.make(requireView(), String.format("%s %s", error.status_code, error.status_message), Snackbar.LENGTH_SHORT).setAction(getString(
-                    R.string.repeat), View.OnClickListener {
+                    R.string.repeat)
+        ) {
             viewModel!!.onGetData()
-        }).show() })
+        }.show() })
 
         transferViewModel = ViewModelProviders.of(activity!!).get(TransferViewModel::class.java)
 
@@ -101,14 +102,8 @@ class MainFragment : Fragment() {
             override fun loadMoreItems() {
                 isLoading = true
                 swipeRefreshLayout.isRefreshing = isLoading
-                current_page = current_page + 1
-                Log.d("MainFragment", "loadNextPage: $current_page")
-                Handler().postDelayed(object : Runnable {
-                    override fun run() {
-                        loadNextPage()
-                    }
-
-                }, 1000)
+                currentPage += 1
+                Handler().postDelayed({ loadNextPage() }, 1000)
             }
 
             override fun getTotalPageCount(): Int {
@@ -143,7 +138,7 @@ class MainFragment : Fragment() {
 
     fun loadNextPage() {
 
-        viewModel!!.onGetPagedData(current_page)
+        viewModel!!.onGetPagedData(currentPage)
     }
 
 

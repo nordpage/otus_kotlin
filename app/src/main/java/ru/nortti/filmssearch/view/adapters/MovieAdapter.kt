@@ -24,7 +24,7 @@ class MovieAdapter(var context: Context, var prefs: SharedPreference, var callba
         callback.onMovieAdded()
     }
 
-    fun addMovie(movie: Movie){
+    private fun addMovie(movie: Movie){
         movies.add(movie)
         notifyItemInserted(movies.size - 1)
     }
@@ -43,28 +43,29 @@ class MovieAdapter(var context: Context, var prefs: SharedPreference, var callba
             itemView.ratingTx.text = String.format(itemView.context.getString(R.string.rating), item.vote_average, item.vote_count)
 
             itemView.details.setOnClickListener {
-                callback.onClick(item.id.toInt())
+                callback.onClick(item.id)
             }
             if (prefs.getFavorites().contains(item)){
                 Glide
                     .with(context)
                     .load(R.drawable.ic_heart_filled)
                     .centerCrop()
-                    .into(itemView.fav);
+                    .into(itemView.fav)
             }
             itemView.poster.setOnLongClickListener {
                     val pos = movies.indexOf(item)
                     if  (prefs.getFavorites().contains(item)){
                         Snackbar.make(it, String.format(context.getString(R.string.remove_from_fav), item.title), Snackbar.LENGTH_SHORT).setAction(
-                            R.string.undo, View.OnClickListener {
-                                prefs.addToFav(pos, item)
-                                notifyItemInserted(pos)
-                            }).show()
+                            R.string.undo
+                        ) {
+                            prefs.addToFav(pos, item)
+                            notifyItemInserted(pos)
+                        }.show()
 
                         prefs.removeFromFav(item)
                         if  (pos > -1) {
                             movies.removeAt(pos)
-                            notifyItemRemoved(position)
+                            notifyItemRemoved(pos)
                         }
                     } else {
                         prefs.addToFav(item)

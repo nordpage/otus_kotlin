@@ -7,8 +7,8 @@ import java.util.*
 
 object Extensions {
     fun setLocale(context: Context, langCode: String) {
-        var config = Configuration(context.resources.configuration)
-        var locale = Locale(langCode.toLowerCase())
+        val config = Configuration(context.resources.configuration)
+        val locale = Locale(langCode.toLowerCase(Locale.getDefault()))
         Locale.setDefault(locale)
         config.setLocale(locale)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
