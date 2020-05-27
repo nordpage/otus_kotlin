@@ -28,4 +28,10 @@
     <string name="repeat">Повторить</string>
     <string name="notification_title">Напоминание о фильме</string>
     <string name="notification_text">Вы отложили фильм %s.\nПора его посмотреть!</string>
+    <string name="add">Добавить</string>
+    <string name="cancel">Отмена</string>
+    <string name="see_later">Вы хотите отложить фильм %s \nв список \"Посмотреть позже\"</string>
+    <string name="not_empty_date">Значение \"Дата\" не может быть пустым.</string>
+    <string name="list_is_empty">Список %s пуст.</string>
+    <string name="watch_later">Посмотреть позже</string>
 </resources>

@@ -12,17 +12,21 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_details.descriptionTx
 import kotlinx.android.synthetic.main.activity_details.poster
 import kotlinx.android.synthetic.main.fragment_detail.*
+
 import ru.nortti.filmssearch.R
+import ru.nortti.filmssearch.viewModel.viewModels.DetailsViewModel
 import ru.nortti.filmssearch.model.remote.ErrorResponse
 import ru.nortti.filmssearch.model.remote.MovieDetail
+import ru.nortti.filmssearch.utils.EXTRA_ID
 import ru.nortti.filmssearch.utils.Extensions.getImageUrlBig
-import ru.nortti.filmssearch.viewModel.viewModels.DetailsViewModel
-
+import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
 
 class DetailsFragment : Fragment() {
 
     var movie_id: Int = 0
     private lateinit var viewModel: DetailsViewModel
+    private var transferViewModel : TransferViewModel? = null
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,7 +38,7 @@ class DetailsFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (arguments != null) {
-            movie_id = arguments!!.getInt(ARG_PARAM)
+            movie_id = arguments!!.getInt(EXTRA_ID)
         }
     }
 
@@ -45,8 +49,13 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(DetailsViewModel::class.java)
-        viewModel.getDetailedData(movie_id)
+        transferViewModel = ViewModelProviders.of(activity!!).get(TransferViewModel::class.java)
+
+        viewModel = ViewModelProviders.of(activity!!).get(DetailsViewModel::class.java)
+        transferViewModel!!.movieId.observe(this.viewLifecycleOwner, Observer<Int> {
+            viewModel.getDetailedData(it)
+        })
+
         viewModel.movies.observe(this.viewLifecycleOwner, Observer<MovieDetail> {
 
             Glide
@@ -61,25 +70,16 @@ class DetailsFragment : Fragment() {
 
         viewModel.errors.observe(this.viewLifecycleOwner, Observer<Throwable>{ t ->
             Snackbar.make(requireView(), t.message.toString(), Snackbar.LENGTH_SHORT).setAction(getString(
-                R.string.repeat), View.OnClickListener {
-                viewModel.getDetailedData(movie_id)
-            }).show()
+                R.string.repeat)
+            ) {
+                viewModel.getDetailedData(transferViewModel!!.getMovieIdData())
+            }.show()
         } )
         viewModel.customErrors.observe(this.viewLifecycleOwner, Observer<ErrorResponse> { error -> Snackbar.make(requireView(), String.format("%s %s", error.status_code, error.status_message), Snackbar.LENGTH_SHORT).setAction(getString(
-            R.string.repeat), View.OnClickListener {
-            viewModel.getDetailedData(movie_id)
-        }).show() })
-    }
+            R.string.repeat)
+        ) {
+            viewModel.getDetailedData(transferViewModel!!.getMovieIdData())
+        }.show() })
 
-    companion object {
-        private val ARG_PARAM = "movie_id"
-
-        fun newInstance(id: Int): DetailsFragment {
-            val fragment = DetailsFragment()
-            val args = Bundle()
-            args.putInt(ARG_PARAM, id)
-            fragment.arguments = args
-            return fragment
-        }
     }
 }

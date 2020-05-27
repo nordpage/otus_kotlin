@@ -1,29 +1,30 @@
 package ru.nortti.filmssearch.view.activities
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProviders
 import kotlinx.android.synthetic.main.activity_main.*
 import ru.nortti.filmssearch.R
-import ru.nortti.filmssearch.view.fragments.FavoriteFragment
-import ru.nortti.filmssearch.view.fragments.MainFragment
-import ru.nortti.filmssearch.view.fragments.SettingsFragment
+import ru.nortti.filmssearch.utils.EXTRA_ID
+import ru.nortti.filmssearch.view.fragments.*
+import ru.nortti.filmssearch.viewModel.viewModels.TransferViewModel
+import timber.log.Timber
+
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        private const val TAG = "MainActivity"
-        private const val RESULT_CODE = 0
-    }
-
+    var movieId: Int = 0
+    var transferViewModel: TransferViewModel? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         loadFragment(MainFragment())
+
         navigationView.inflateMenu(R.menu.bottom_menu)
         navigationView.setOnNavigationItemSelectedListener {
             when(it.itemId){
@@ -37,6 +38,10 @@ class MainActivity : AppCompatActivity() {
                     return@setOnNavigationItemSelectedListener true
                 }
 
+                R.id.pending -> {
+                    loadFragment(PendingFragment())
+                    return@setOnNavigationItemSelectedListener true
+                }
                 R.id.settings -> {
                     loadFragment(SettingsFragment())
                     return@setOnNavigationItemSelectedListener true
@@ -49,52 +54,12 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
-        super.onSaveInstanceState(outState, outPersistentState)
-
-    }
-
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu to use in the action bar
         val inflater = menuInflater
         inflater.inflate(R.menu.options_menu, menu)
         return super.onCreateOptionsMenu(menu)
     }
-
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-//
-//        return when (item.itemId) {
-//            R.id.favs -> {
-//                startActivity(Intent(this, FavoritesActivity::class.java))
-//                return true
-//            }
-//            R.id.language -> {
-//                if (prefs.getValueString(LANGUAGE).equals("RU")) {
-//                    prefs.save(LANGUAGE, "EN")
-//
-//                } else {
-//                    prefs.save(LANGUAGE, "RU")
-//                }
-//                this.recreate()
-//                return true
-//            }
-//            R.id.theme -> {
-//                if (prefs.getValueString(THEME).equals("DAY")) {
-//                    prefs.save(THEME, "NIGHT")
-//                } else {
-//                    prefs.save(THEME, "DAY")
-//                }
-//                this.recreate()
-//                return true
-//            }
-//            else -> super.onOptionsItemSelected(item)
-//        }
-//    }
 
     override fun onBackPressed() {
         val builder = AlertDialog.Builder(this@MainActivity)
@@ -106,14 +71,13 @@ class MainActivity : AppCompatActivity() {
         builder.setMessage(resources.getString(R.string.want_exit))
 
         // Set a positive button and its click listener on alert dialog
-        builder.setPositiveButton(resources.getString(R.string.yes)) { dialog, which ->
+        builder.setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
             finish()
-
         }
 
 
         // Display a negative button on alert dialog
-        builder.setNegativeButton(resources.getString(R.string.no)) { dialog, which ->
+        builder.setNegativeButton(resources.getString(R.string.no)) { dialog, _ ->
             dialog.dismiss()
         }
 
@@ -131,6 +95,8 @@ class MainActivity : AppCompatActivity() {
         transaction.addToBackStack(null)
         transaction.commit()
     }
+
+
 
 }
 

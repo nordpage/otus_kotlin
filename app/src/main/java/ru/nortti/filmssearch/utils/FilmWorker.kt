@@ -42,7 +42,7 @@ class FilmWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
     override fun doWork(): Result {
         val title = inputData.getString(EXTRA_TITLE)
         val text = inputData.getString(EXTRA_TEXT)
-        val id = inputData.getLong(EXTRA_ID, 0).toInt()
+        val id = inputData.getInt(EXTRA_ID, 0)
         sendNotification(title!!, text!!, id)
         return Result.success()
     }
@@ -52,10 +52,9 @@ class FilmWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
         id: Int
     ) {
         val intent = Intent(applicationContext, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         intent.putExtra(EXTRA_ID, id)
         val pendingIntent =
-            PendingIntent.getActivity(applicationContext, 0, intent, 0)
+            PendingIntent.getActivity(applicationContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         val notificationManager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -71,6 +70,7 @@ class FilmWorker(context: Context, workerParams: WorkerParameters) : Worker(cont
             .setAutoCancel(true)
         Objects.requireNonNull(notificationManager).notify(id, notification.build())
     }
+
 
 
 }

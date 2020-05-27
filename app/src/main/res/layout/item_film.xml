@@ -59,14 +59,13 @@
             <TextView
                 android:id="@+id/description"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
                 android:textStyle="italic"
-                app:layout_constraintBottom_toTopOf="@+id/details"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/poster"
                 app:layout_constraintTop_toBottomOf="@+id/ratingTx" />
 
@@ -74,7 +73,7 @@
                 android:id="@+id/details"
                 style="@style/Button"
                 android:layout_width="0dp"
-                android:layout_height="24dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
@@ -83,7 +82,8 @@
                 android:text="@string/details"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/poster" />
+                app:layout_constraintStart_toEndOf="@+id/poster"
+                app:layout_constraintTop_toBottomOf="@+id/description" />
 
             <TextView
                 android:id="@+id/ratingTx"
@@ -100,10 +100,10 @@
                 android:id="@+id/laterBut"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:background="@android:color/transparent"
                 android:scaleType="centerInside"
-                app:layout_constraintBottom_toTopOf="@+id/ratingTx"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_alarm" />

@@ -24,4 +24,10 @@
     <string name="repeat">Repeat</string>
     <string name="notification_title">Film reminder</string>
     <string name="notification_text">You postponed the movie %s.\nIt\'s time to see it!</string>
+    <string name="add">Add</string>
+    <string name="cancel">Cancel</string>
+    <string name="see_later">You want to postpone the movie %s \\ n list \\ \" View later\\\"</string>
+    <string name="not_empty_date">The value \\ \"Date\\\" cannot be empty.</string>
+    <string name="list_is_empty">The %s list is empty.</string>
+    <string name="watch_later">Watch Later</string>
 </resources>

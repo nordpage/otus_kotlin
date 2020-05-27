@@ -8,14 +8,15 @@ import org.joda.time.DateTime
 import org.joda.time.DateTimeZone
 import org.joda.time.format.DateTimeFormat
 import ru.nortti.filmssearch.model.local.models.Favorite
+import ru.nortti.filmssearch.model.local.models.Pending
 import ru.nortti.filmssearch.model.remote.Movie
 import java.time.format.DateTimeFormatter
 import java.util.*
 
 object Extensions {
     fun setLocale(context: Context, langCode: String) {
-        var config = Configuration(context.resources.configuration)
-        var locale = Locale(langCode.toLowerCase())
+        val config = Configuration(context.resources.configuration)
+        val locale = Locale(langCode.toLowerCase(Locale.getDefault()))
         Locale.setDefault(locale)
         config.setLocale(locale)
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
@@ -59,6 +60,16 @@ object Extensions {
 
     fun generateKey() : String {
         return UUID.randomUUID().toString()
+    }
+
+    fun getAlertTime(userInput: Int): Long {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.MINUTE, userInput)
+        return cal.timeInMillis
+    }
+
+    fun Movie.ToPending(time: Long) : Pending {
+        return Pending(id = this.id, title = this.title, poster = this.poster_path, time = time)
     }
 
 }

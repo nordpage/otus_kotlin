@@ -8,16 +8,19 @@ import androidx.room.TypeConverters
 import ru.nortti.filmssearch.model.local.converters.MovieConverter
 import ru.nortti.filmssearch.model.local.daos.FavoritesDao
 import ru.nortti.filmssearch.model.local.daos.MovieDao
+import ru.nortti.filmssearch.model.local.daos.PendingDao
 import ru.nortti.filmssearch.model.local.models.Favorite
+import ru.nortti.filmssearch.model.local.models.Pending
 import ru.nortti.filmssearch.model.remote.MovieResponse
 import ru.nortti.filmssearch.utils.ROOM_DB_NAME
 
-@Database(entities = [MovieResponse::class, Favorite::class], version = 1, exportSchema = false)
+@Database(entities = [MovieResponse::class, Favorite::class, Pending::class], version = 1, exportSchema = false)
 @TypeConverters(MovieConverter::class)
 abstract class RoomDB : RoomDatabase() {
 
     abstract fun getMoviesDao() : MovieDao
     abstract fun getFavoritesDao() : FavoritesDao
+    abstract fun getPendingDao() : PendingDao
 
     companion object {
         private var INSTANCE : RoomDB?  = null

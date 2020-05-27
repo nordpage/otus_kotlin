@@ -90,13 +90,7 @@ class MovieAdapter(var model : FavoritesViewModel, var callback: MovieCallback) 
             }
 
             itemView.laterBut.setOnClickListener {
-                val tag = generateKey()
-                val title = itemView.context.getString(R.string.notification_title)
-                val text = String.format(itemView.context.getString(R.string.notification_text), item.title)
-                val alertTime = getAlertTime(2) - System.currentTimeMillis()
-                val data = createWorkInputData(title, text, item.id)
-                FilmWorker.scheduleReminder(alertTime, data, tag)
-
+               callback.onReminder(item)
             }
         }
     }
@@ -119,12 +113,7 @@ class MovieAdapter(var model : FavoritesViewModel, var callback: MovieCallback) 
     interface MovieCallback {
         fun onMovieAdded()
         fun onClick(movie_id: Int)
-    }
-
-    private fun getAlertTime(userInput: Int): Long {
-        val cal = Calendar.getInstance()
-        cal.add(Calendar.MINUTE, userInput)
-        return cal.timeInMillis
+        fun onReminder(movie: Movie)
     }
 
 }
